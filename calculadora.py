@@ -1,48 +1,73 @@
-def sumar(a, b):
-    return a + b
+import operator
+import math
 
-def restar(a, b):
-    return a - b
+operaciones = {
 
-def dividir(a, b):
-    if b == 0:
-        return "Error: No se puede dividir por cero"
-    return a / b
+    '1': ('Sumar', operator.add),
+    '2': ('Restar', operator.sub),
+    '3': ('Dividir', operator.truediv),
+    '4': ('Multiplicacion', operator.mul),
+    '5': ('Potencias', operator.pow),
+    '6': ('Raiz', math.sqrt),
+    '7': ('Porcentaje', None)   
+}
 
-def multiplicar(a, b):
-    return a * b
+def obtener_numero(mensaje, permitir_negativos = True):
+    while True:
+        try:
+            num = float(input(mensaje))
+            if not permitir_negativos and num < 0:
+                print("❌ No puedes ingresar numeros negativos")
+                continue
+            return num
+        except ValueError:
+             print("❌ Entrada inválida. Debes ingresar números.")
 
+historial = []    
 while True:
 
     print("\n📌 Calculadora Interactiva")
-    print("1. Sumar ➕")
-    print("2. Restar ➖")
-    print("3. Dividir ➗")
-    print("4. Multiplicacion ✖️")
-    print("5. Salir ❌")
+    for key, (nombre, _) in operaciones.items():
+        print(f"{key}, {nombre}")
+    print("8. ❌ Salir")
 
-    option = input("Elige una opcion (1-5): ")
+    opcion = input("\nElige una opcion (1-8): ")
 
-    if option == '5':
-        print("¡Hasta luego! 👋")
-        break
+    if opcion == '8':
+        confirmar = input("¿Seguro quieres salir (s/n): ").strip().lower()
+        if confirmar == 's':
+            print("Hasta luego 👋🏽")
+            break
+        continue
 
-    if option not in ['1', '2', '3', '4']:
+    if opcion not in operaciones:
         print("❌ Opción inválida. Intenta de nuevo.")
         continue
 
-    try:
-        num1 = float(input("Ingresa el primer numero: "))
-        num2 = float(input("Ingresa el segundo numero: "))
-    except ValueError:
-        print("❌ Entrada inválida. Debes ingresar números.")
-        continue
+    nombre, funcion = operaciones[opcion]
 
-    if option == '1':
-        print(f"✅ Resultado: {sumar(num1, num2)}")
-    elif option == '2':
-        print(f"✅ Resultado: {restar(num1, num2)}")
-    elif option == '3':
-        print(f"✅ Resultado: {dividir(num1, num2)}")
-    elif option == '4':
-        print(f"✅ Resultado: {multiplicar(num1, num2)}")
+    if opcion == '6':
+        num1 = obtener_numero("\nIngresar el numero para calcular la raiz: ", permitir_negativos = False)
+        resultado = funcion(num1)
+
+    elif opcion == '7':
+        num1 = obtener_numero("\nIngresa numero base: ")
+        num2 = obtener_numero("\nIngresa el porcentaje a calcular: ")
+        resultado = (num1 * num2) / 100
+
+    else:
+        num1 = float(input("\nIngresa el primer numero: "))
+        num2 = float(input("Ingresa el segundo numero: "))
+        
+        if opcion == '3' and num2 == 0:
+            print("❌ Error: No se puede dividir por cero")
+            continue
+
+        resultado = funcion(num1, num2)
+    
+    historial.append(f"🔹 {nombre}: {num1} {' ' if opcion == '6' else num2} = {resultado}")
+    
+    print(f"\n✅ {nombre}: {resultado}")
+    print("\n📜 Historial de operaciones:")
+    for h in historial:
+        print(h)
