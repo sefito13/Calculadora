@@ -12,6 +12,17 @@ operaciones = {
     '7': ('Porcentaje', None)   
 }
 
+
+def mostrar_menu(operaciones):
+    print("\n📌 Calculadora Interactiva")
+    for key, (nombre, _) in operaciones.items():
+        print(f"{key}, {nombre}")
+    print("8. ❌ Salir")
+
+    opcion = input("\nElige una opcion (1-8): ")
+    return opcion
+
+
 def obtener_numero(mensaje, permitir_negativos = True):
     while True:
         try:
@@ -23,51 +34,73 @@ def obtener_numero(mensaje, permitir_negativos = True):
         except ValueError:
              print("❌ Entrada inválida. Debes ingresar números.")
 
-historial = []    
-while True:
 
-    print("\n📌 Calculadora Interactiva")
-    for key, (nombre, _) in operaciones.items():
-        print(f"{key}, {nombre}")
-    print("8. ❌ Salir")
+def calcular_raiz():
+    num = obtener_numero("\nIngresar el numero para calcular la raiz: ", permitir_negativos = False)
+    resultado = math.sqrt(num)
+    mensaje = f"Raiz cuadrada de {num} = {resultado}"
+    return resultado, mensaje
 
-    opcion = input("\nElige una opcion (1-8): ")
+def calcular_porcentaje():
+    base = obtener_numero("Ingrese un numero base: ")
+    porcentaje = obtener_numero("Ingrese el pocentaje a calcular: ")
+    resultado = (base * porcentaje) / 100
+    mensaje = f"Porcentaje = {porcentaje}% de {base} = {resultado}"
+    return resultado, mensaje
 
-    if opcion == '8':
-        confirmar = input("¿Seguro quieres salir (s/n): ").strip().lower()
-        if confirmar == 's':
-            print("Hasta luego 👋🏽")
-            break
-        continue
+def calcular_basico(funcion, nombre):
+    num1 = obtener_numero("Ingresa el primer numero: ")
+    num2 = obtener_numero("Ingresa el segundo numero: ")
 
-    if opcion not in operaciones:
-        print("❌ Opción inválida. Intenta de nuevo.")
-        continue
-
-    nombre, funcion = operaciones[opcion]
-
-    if opcion == '6':
-        num1 = obtener_numero("\nIngresar el numero para calcular la raiz: ", permitir_negativos = False)
-        resultado = funcion(num1)
-
-    elif opcion == '7':
-        num1 = obtener_numero("\nIngresa numero base: ")
-        num2 = obtener_numero("\nIngresa el porcentaje a calcular: ")
-        resultado = (num1 * num2) / 100
-
-    else:
-        num1 = float(input("\nIngresa el primer numero: "))
-        num2 = float(input("Ingresa el segundo numero: "))
-        
-        if opcion == '3' and num2 == 0:
+    if nombre == 'Dividir' and num2 == 0:
             print("❌ Error: No se puede dividir por cero")
-            continue
+            return None, None
 
-        resultado = funcion(num1, num2)
-    
-    historial.append(f"🔹 {nombre}: {num1} {' ' if opcion == '6' else num2} = {resultado}")
-    
-    print(f"\n✅ {nombre}: {resultado}")
+    resultado = funcion(num1, num2)
+    mensaje = f"{nombre} = {num1} y {num2} = {resultado}"
+    return resultado, mensaje
+
+def mostrar_historial(historial):
     print("\n📜 Historial de operaciones:")
     for h in historial:
         print(h)
+
+def confirmar_salida():
+    respuesta = input("¿Seguro que quieres salir? (s/n): ").strip().lower()
+    return respuesta == "s"
+
+def main():
+
+    historial = []    
+    while True:
+        opcion = mostrar_menu(operaciones)
+
+        if opcion == '8':
+            if confirmar_salida():
+                print("Hasta luego 👋🏽")
+                break
+            continue
+
+        if opcion not in operaciones:
+            print("❌ Opción inválida. Intenta de nuevo.")
+            continue
+
+        nombre, funcion = operaciones[opcion]
+
+        if opcion == '6':
+            resultado, mensaje = calcular_raiz()
+
+        elif opcion == '7':
+            resultado, mensaje = calcular_porcentaje()
+
+        else:
+            resultado, mensaje = calcular_basico(funcion, nombre)
+            if resultado is None:
+                continue
+    
+        print(f"\n✅ Resultado: {resultado}")
+        historial.append(mensaje)
+        mostrar_historial(historial)
+
+if __name__ == "__main__":
+    main()
